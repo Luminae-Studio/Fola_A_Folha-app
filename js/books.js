@@ -363,6 +363,18 @@ function showBookDetail(id){
       <div id="bdet-checkins"></div>
     </div>
     <button class="btn bg2 bs" style="width:100%;margin-top:12px;justify-content:center;" onclick="closeModal('mod-bdet');openFindings(${id})">📌 Achados / Previsões</button>
+    <div style="margin-top:16px;">
+      <div style="font-size:11px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">📝 Frases marcantes</div>
+      ${(()=>{
+        const bf=S.frases.filter(f=>f.bookId===id);
+        if(!bf.length)return'<div style="font-size:12px;color:var(--txt3);">Nenhuma frase salva deste livro ainda.</div>';
+        return bf.map(f=>`<div style="background:var(--surf2);border-radius:var(--rs);padding:10px;margin-bottom:8px;">
+          <div style="font-size:12px;font-style:italic;line-height:1.6;">"${escapeHTML(f.text)}"</div>
+          ${f.page?`<div style="font-size:10px;color:var(--txt3);margin-top:3px;">p. ${f.page}</div>`:''}
+          <button class="btn bg2" style="font-size:11px;padding:3px 8px;margin-top:6px;" onclick="event.stopPropagation();_cpFrase(${f.id},this)">📋 Copiar</button>
+        </div>`).join('');
+      })()}
+    </div>
   `;
   document.getElementById('bdet-actions').innerHTML=`
     <button class="btn bg2 bs" onclick="closeModal('mod-bdet')">Fechar</button>

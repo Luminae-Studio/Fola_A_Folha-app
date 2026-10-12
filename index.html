@@ -359,7 +359,8 @@
 </div>
 
 <div id="pg-frases" class="pg">
-  <div class="ph"><div><h2>Frases Marcantes</h2></div><button class="btn bp bs" onclick="openModal('mod-frase')">+</button></div>
+  <div class="ph"><div><h2>Frases Marcantes</h2></div><button class="btn bp bs" onclick="openFraseModal()">+</button></div>
+  <div style="margin-bottom:12px;"><select id="frases-filter" style="width:100%;padding:8px 10px;border-radius:var(--rs);border:1px solid var(--bord);background:var(--surf);color:var(--txt);font-size:13px;" onchange="renderFrases()"><option value="">Todos os livros</option></select></div>
   <div id="frases-list"></div>
 </div>
 
@@ -639,10 +640,8 @@
 <div class="mov" id="mod-frase">
   <div class="mod"><div class="mh"></div><h3>Frase Marcante</h3>
     <div class="fg"><label>Frase</label><textarea id="fr-t" style="min-height:90px;" placeholder="&quot;A frase que te marcou...&quot;"></textarea></div>
-    <div class="fr">
-      <div class="fg"><label>Livro</label><input type="text" id="fr-b" placeholder="Título do livro"></div>
-      <div class="fg"><label>Autor</label><input type="text" id="fr-a"></div>
-    </div>
+    <div class="fg"><label>Livro</label><select id="fr-bsel" onchange="_fraseAutoAutor()" style="width:100%;padding:8px 10px;border-radius:var(--rx);border:1px solid var(--bord);background:var(--surf);color:var(--txt);font-size:13px;"><option value="">— Selecione um livro —</option></select></div>
+    <div class="fg"><label>Autor</label><input type="text" id="fr-a"></div>
     <div class="fg"><label>Página</label><input type="number" id="fr-p" placeholder="ex: 142"></div>
     <div class="ma"><button class="btn bg2" onclick="closeModal('mod-frase')">Cancelar</button><button class="btn bp" onclick="saveFrase()">Salvar</button></div>
   </div>

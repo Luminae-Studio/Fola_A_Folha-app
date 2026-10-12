@@ -432,18 +432,66 @@ function renderStats(){
 }
 
 // FRASES
+var _frasesExp={};
+
+function openFraseModal(){
+  document.getElementById('fr-t').value='';
+  document.getElementById('fr-a').value='';
+  document.getElementById('fr-p').value='';
+  var sel=document.getElementById('fr-bsel');
+  var sorted=S.books.slice().sort(function(a,b){return a.title.localeCompare(b.title,'pt-BR');});
+  sel.innerHTML='<option value="">— Selecione um livro —</option>'+
+    sorted.map(function(b){return '<option value="'+b.id+'">'+escapeHTML(b.title)+'</option>';}).join('');
+  openModal('mod-frase');
+}
+function _fraseAutoAutor(){
+  var sel=document.getElementById('fr-bsel');
+  var bid=parseInt(sel.value);if(!bid)return;
+  var book=S.books.find(function(b){return b.id===bid;});
+  if(book&&book.author)document.getElementById('fr-a').value=book.author;
+}
 function saveFrase(){
-  S.frases.push({id:Date.now(),text:document.getElementById('fr-t').value,book:document.getElementById('fr-b').value,author:document.getElementById('fr-a').value,page:document.getElementById('fr-p').value});
+  var sel=document.getElementById('fr-bsel');
+  var bid=sel&&sel.value?parseInt(sel.value):null;
+  var bookTitle='';
+  if(bid){var bk=S.books.find(function(b){return b.id===bid;});if(bk)bookTitle=bk.title;}
+  S.frases.push({id:Date.now(),text:document.getElementById('fr-t').value,book:bookTitle,bookId:bid,author:document.getElementById('fr-a').value,page:document.getElementById('fr-p').value});
   sv('frases');closeModal('mod-frase');renderFrases();checkAlbum();
 }
+function _cpFrase(id,btn){
+  var f=S.frases.find(function(x){return x.id===id;});if(!f)return;
+  var text='"'+f.text+'"'+(f.author?'\n— '+f.author:'')+(f.book?' · '+f.book:'');
+  var done=function(){btn.textContent='✓';setTimeout(function(){btn.textContent='📋';},1500);};
+  if(navigator.clipboard){navigator.clipboard.writeText(text).then(done).catch(function(){});}
+  else{var ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;opacity:0;';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);done();}
+}
+function toggleFrase(id){_frasesExp[id]=!_frasesExp[id];renderFrases();}
 function renderFrases(){
-  var el=document.getElementById('frases-list');
-  if(!S.frases.length){el.innerHTML='<div class="empty"><div class="ei">&#x1F4AC;</div><p>Nenhuma frase ainda</p></div>';return;}
-  el.innerHTML=S.frases.slice().reverse().map(function(f){
-    return '<div class="qcard">'+
-      '<div style="font-size:13px;font-style:italic;line-height:1.6;margin-bottom:8px;">"'+f.text+'"</div>'+
-      '<div style="font-size:11px;color:var(--txt2);">-- '+(f.author||'?')+(f.book?' &middot; '+f.book:'')+(f.page?' (p.'+f.page+')':'')+'</div>'+
-      '<button class="btn bx bd" style="margin-top:8px;" onclick="delFrase('+f.id+')">&#x2715;</button></div>';
+  var el=document.getElementById('frases-list');if(!el)return;
+  var filterEl=document.getElementById('frases-filter');
+  var filterVal=filterEl?filterEl.value:'';
+  if(filterEl){
+    var bids=[...new Set(S.frases.map(function(f){return f.bookId;}).filter(Boolean))];
+    var booksWF=bids.map(function(id){return S.books.find(function(b){return b.id===id;});}).filter(Boolean)
+      .sort(function(a,b){return a.title.localeCompare(b.title,'pt-BR');});
+    filterEl.innerHTML='<option value="">Todos os livros</option>'+
+      booksWF.map(function(b){return '<option value="'+b.id+'"'+(filterVal==b.id?' selected':'')+'>'+escapeHTML(b.title)+'</option>';}).join('');
+  }
+  var frases=S.frases.slice().reverse();
+  if(filterVal)frases=frases.filter(function(f){return String(f.bookId)===String(filterVal);});
+  if(!frases.length){el.innerHTML='<div class="empty"><div class="ei">&#x1F4AC;</div><p>Nenhuma frase ainda</p></div>';return;}
+  el.innerHTML=frases.map(function(f){
+    var exp=_frasesExp[f.id];
+    var clamp=exp?'':'overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;';
+    return '<div class="qcard" style="cursor:pointer;" onclick="toggleFrase('+f.id+')">'+
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">'+
+      '<div style="font-size:13px;font-style:italic;line-height:1.6;flex:1;'+clamp+'">"'+escapeHTML(f.text)+'"</div>'+
+      '<div style="display:flex;gap:4px;flex-shrink:0;" onclick="event.stopPropagation()">'+
+      '<button class="btn bg2" style="font-size:11px;padding:4px 8px;" onclick="_cpFrase('+f.id+',this)">📋</button>'+
+      '<button class="btn bx" style="font-size:11px;padding:4px 8px;" onclick="delFrase('+f.id+')">✕</button>'+
+      '</div></div>'+
+      (exp?'<div style="font-size:11px;color:var(--txt2);margin-top:8px;">— '+escapeHTML(f.author||'?')+(f.book?' · '+escapeHTML(f.book):'')+(f.page?' (p.'+f.page+')':'')+'</div>':'')+
+      '</div>';
   }).join('');
 }
 function delFrase(id){S.frases=S.frases.filter(function(x){return x.id!==id;});sv('frases');renderFrases();}

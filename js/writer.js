@@ -519,7 +519,6 @@ const CONQUISTAS=[
   {id:'p10',emoji:'🌻',name:'Meta Cumprida',desc:'Atingiu uma meta 100%',check:()=>S.metas.some(m=>m.current>=m.goal)},
   {id:'p11',emoji:'📰',name:'Publicada',desc:'Primeira publicação registrada',check:()=>S.pubs.length>=1},
   {id:'p12',emoji:'💬',name:'Colecionadora',desc:'10 frases marcantes salvas',check:()=>S.frases.length>=10},
-  {id:'p13',emoji:'⏱️',name:'Hora Extra',desc:'Registrou 60h de leitura',check:()=>S.sessions.reduce((a,s)=>a+s.minutes,0)>=3600},
   {id:'p14',emoji:'🎭',name:'Multigenre',desc:'Leu 6 gêneros diferentes',check:()=>{const yr=rdYearN;return S.rdGenRd[yr]&&Object.values(S.rdGenRd[yr]).filter(Boolean).length>=6;}},
   {id:'p15',emoji:'✏️',name:'Prompt Fiel',desc:'Respondeu 10 prompts',check:()=>S.prompts.length>=10},
   {id:'p16',emoji:'🌙',name:'Noturna',desc:'Ativou o modo escuro',check:()=>S.theme==='dark'},

@@ -478,7 +478,6 @@ function renderInicio(){
       </div>
     </div>`).join('')
     :'<div style="font-size:12px;color:var(--txt3);text-align:center;padding:8px;">Nenhum livro em andamento</div>';
-  renderTempo();
 }
 function renderFraseAno(){
   const frase=DB.get('frase_ano_'+iniYearN);

@@ -323,25 +323,6 @@
   </div>
 </div>
 
-<div id="pg-tempo" class="pg">
-  <div class="ph"><div><h2>Tempo de Leitura</h2></div></div>
-  <div class="card" style="text-align:center;padding:26px;margin-bottom:14px;">
-    <div class="tmr" id="main-tmr">00:00:00</div>
-    <div style="font-size:11px;color:var(--txt2);margin-top:5px;">sessão atual</div>
-    <div style="display:flex;gap:8px;justify-content:center;margin-top:14px;">
-      <button class="btn bp" onclick="startTimer()">▶</button>
-      <button class="btn bg2" onclick="stopTimer()">⏸</button>
-      <button class="btn bg2" onclick="saveSession()">💾 Salvar</button>
-    </div>
-  </div>
-  <div class="sg mb">
-    <div class="card sc"><div class="sn" style="font-size:20px;color:var(--li);" id="t-hj">0</div><div class="sl">min hoje</div></div>
-    <div class="card sc"><div class="sn" style="font-size:20px;color:var(--te);" id="t-sem">0</div><div class="sl">min semana</div></div>
-    <div class="card sc"><div class="sn" style="font-size:20px;color:var(--am);" id="t-mes">0</div><div class="sl">min mês</div></div>
-    <div class="card sc"><div class="sn" style="font-size:20px;color:var(--co);" id="t-tot">0</div><div class="sl">min total</div></div>
-  </div>
-  <div class="card"><div style="font-size:13px;font-weight:600;margin-bottom:10px;">Sessões recentes</div><div id="sess-list"></div></div>
-</div>
 
 <div id="pg-stats" class="pg">
   <div class="ph"><div><h2>Estatísticas</h2></div></div>
@@ -393,13 +374,11 @@
     <button class="di" onclick="go('estudo');closeDrawer()"><span class="ico">🎓</span>Estudo</button>
     <button class="di" onclick="go('metas');closeDrawer()"><span class="ico">🌱</span>Metas</button>
     <button class="di" onclick="go('sorteio');closeDrawer()"><span class="ico">🎲</span>Sorteio</button>
-    <button class="di" onclick="go('tempo');closeDrawer()"><span class="ico">⏱️</span>Tempo</button>
     <button class="di" onclick="go('stats');closeDrawer()"><span class="ico">📊</span>Stats</button>
     <button class="di" onclick="go('frases');closeDrawer()"><span class="ico">💬</span>Frases</button>
 
     <button class="di" onclick="go('emprestimos');closeDrawer()"><span class="ico">🤝</span>Emprest.</button>
     <button class="di" id="theme-di" onclick="toggleTheme()"><span class="ico" id="theme-ico">🌙</span>Tema</button>
-    <button class="di" onclick="recompressCovers();closeDrawer()"><span class="ico">🗜️</span>Otimizar capas</button>
     <button class="di" onclick="exportData();closeDrawer()"><span class="ico">💾</span>Exportar</button>
     <button class="di" onclick="document.getElementById('imp-inp').click();closeDrawer()"><span class="ico">📂</span>Importar</button>
     <button class="di di-logout" onclick="logout()"><span class="ico">🚪</span>Sair</button>

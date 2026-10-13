@@ -133,7 +133,7 @@ async function _handleLogin(user) {
 
 // ── Chaves sincronizadas ──────────────────────────────────
 const _SYNC_KEYS = [
-  'profile','books','wishlist','study','metas','sessions','manus',
+  'profile','books','wishlist','study','metas','manus',
   'concursos','pubs','ideias','rotina','rotMeta','frases',
   'emprest','az','dcStreak','dcGenWr','rdGenRd','dcSubMeta','prompts','theme'
 ];

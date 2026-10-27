@@ -1,4 +1,4 @@
-const CACHE = 'faf-v12';
+const CACHE = 'faf-app-v1';
 
 self.addEventListener('install', e => {
   self.skipWaiting();

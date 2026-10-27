@@ -99,6 +99,11 @@ async function saveBook(){
       chapter:document.getElementById('b-chapter')?.value||'',
       year:parseInt(document.getElementById('b-finished')?.value?.substring(0,4))||new Date().getFullYear()
     };
+    // Freemium: limite de 20 livros na estante
+    if (S.books.length >= 20) {
+      alert('Você atingiu o limite de 20 livros do plano gratuito.\nExclua um livro para adicionar novos.');
+      return;
+    }
     S.books.push(b);
   }
   sv('books');closeModal('mod-book');
@@ -233,6 +238,13 @@ async function saveNewFinding(){
   const content=document.getElementById('fnd-content').value.trim();
   const tag=document.getElementById('fnd-tag').value.trim()||null;
   if(!content)return;
+  // Freemium: limite de 3 achados/previsões por livro
+  const existingFindings=await getFindings(bookId);
+  if(existingFindings.length>=3){
+    closeModal('mod-finding-new');
+    alert('Você atingiu o limite de 3 achados/previsões por livro do plano gratuito.');
+    return;
+  }
   await addFinding(bookId,page,content,tag);
   closeModal('mod-finding-new');
   await renderFindingsList(bookId);

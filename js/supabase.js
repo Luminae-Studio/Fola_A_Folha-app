@@ -3,8 +3,8 @@
 // ════════════════════════════════════════════════════════
 
 // ⚠️ Substitua pelas suas credenciais do Supabase:
-const SUPABASE_URL  = 'https://kwtjulysjkbsokcumnym.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_nQ1ms-xEzNRGFvR39yo9Uw_2-jQo_bD';
+const SUPABASE_URL  = 'https://alcubtuhhpbcfpdrkfnu.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_-XQ9k72HV4gGoJ2emshCMQ_kxWl9cKH';
 
 let _sb   = null; // v2
 let _user = null;
@@ -25,7 +25,7 @@ function _ensureLoginScreen() {
     <div class="login-card">
       <div class="login-logo">📚</div>
       <h1 class="login-title serif">Folha a Folha</h1>
-      <p class="login-sub">Seu app pessoal de leitura e escrita</p>
+      <p class="login-sub">Seu app de leitura literária</p>
       <button class="login-btn-google" onclick="loginGoogle()">
         <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
           <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908C16.658 14.013 17.64 11.706 17.64 9.2z"/>
@@ -33,8 +33,21 @@ function _ensureLoginScreen() {
           <path fill="#FBBC05" d="M3.964 10.707A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.039l3.007-2.332z"/>
           <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.961L3.964 6.293C4.672 4.166 6.656 3.58 9 3.58z"/>
         </svg>
-        Continuar com Google
+        Entrar com Google
       </button>
+      <div class="login-divider"><span>ou</span></div>
+      <div id="login-email-form">
+        <input class="login-input" type="email" id="login-email" placeholder="E-mail" autocomplete="email">
+        <input class="login-input" type="password" id="login-password" placeholder="Senha" autocomplete="current-password">
+        <div id="login-password2-wrap" style="display:none;">
+          <input class="login-input" type="password" id="login-password2" placeholder="Confirmar senha" autocomplete="new-password">
+        </div>
+        <div id="login-error" style="font-size:12px;color:#ef4444;margin-bottom:8px;display:none;"></div>
+        <button class="login-btn-email" id="login-submit-btn" onclick="loginEmail()">Entrar</button>
+        <button class="login-toggle-link" id="login-toggle-btn" onclick="toggleLoginMode()">
+          Ainda não tem conta? <strong>Cadastrar</strong>
+        </button>
+      </div>
       <p class="login-note">Seus dados ficam seguros e<br>sincronizados entre dispositivos.</p>
     </div>`;
   document.body.appendChild(el);
@@ -93,13 +106,87 @@ async function initAuth() {
   });
 }
 
+let _loginMode = 'login'; // 'login' | 'register'
+
+function toggleLoginMode() {
+  _loginMode = _loginMode === 'login' ? 'register' : 'login';
+  const p2 = document.getElementById('login-password2-wrap');
+  const btn = document.getElementById('login-submit-btn');
+  const toggle = document.getElementById('login-toggle-btn');
+  const err = document.getElementById('login-error');
+  if (err) { err.style.display = 'none'; err.textContent = ''; }
+  if (_loginMode === 'register') {
+    if (p2) p2.style.display = '';
+    if (btn) btn.textContent = 'Criar conta';
+    if (toggle) toggle.innerHTML = 'Já tem conta? <strong>Entrar</strong>';
+    btn.onclick = registerEmail;
+  } else {
+    if (p2) p2.style.display = 'none';
+    if (btn) btn.textContent = 'Entrar';
+    if (toggle) toggle.innerHTML = 'Ainda não tem conta? <strong>Cadastrar</strong>';
+    btn.onclick = loginEmail;
+  }
+}
+
+function _setLoginError(msg) {
+  const el = document.getElementById('login-error');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.display = msg ? '' : 'none';
+}
+
+async function loginEmail() {
+  const email = (document.getElementById('login-email')?.value || '').trim();
+  const pass  = document.getElementById('login-password')?.value || '';
+  if (!email || !pass) { _setLoginError('Preencha e-mail e senha.'); return; }
+  const btn = document.getElementById('login-submit-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Entrando…'; }
+  _setLoginError('');
+  try {
+    const { error } = await getSB().auth.signInWithPassword({ email, password: pass });
+    if (error) { _setLoginError(error.message); if (btn) { btn.disabled = false; btn.textContent = 'Entrar'; } }
+  } catch(e) {
+    _setLoginError('Erro ao entrar. Tente novamente.');
+    if (btn) { btn.disabled = false; btn.textContent = 'Entrar'; }
+  }
+}
+
+async function registerEmail() {
+  const email = (document.getElementById('login-email')?.value || '').trim();
+  const pass  = document.getElementById('login-password')?.value || '';
+  const pass2 = document.getElementById('login-password2')?.value || '';
+  if (!email || !pass) { _setLoginError('Preencha e-mail e senha.'); return; }
+  if (pass !== pass2)  { _setLoginError('As senhas não conferem.'); return; }
+  if (pass.length < 6) { _setLoginError('Senha precisa ter ao menos 6 caracteres.'); return; }
+  const btn = document.getElementById('login-submit-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Criando conta…'; }
+  _setLoginError('');
+  try {
+    const { error } = await getSB().auth.signUp({ email, password: pass });
+    if (error) {
+      _setLoginError(error.message);
+      if (btn) { btn.disabled = false; btn.textContent = 'Criar conta'; }
+    } else {
+      _setLoginError('');
+      const el = document.getElementById('login-submit-btn');
+      if (el) { el.disabled = true; el.textContent = 'Verifique seu e-mail ✓'; }
+      _setLoginError('Conta criada! Verifique seu e-mail para confirmar o cadastro.');
+      document.getElementById('login-error').style.color = '#22c55e';
+      document.getElementById('login-error').style.display = '';
+    }
+  } catch(e) {
+    _setLoginError('Erro ao criar conta. Tente novamente.');
+    if (btn) { btn.disabled = false; btn.textContent = 'Criar conta'; }
+  }
+}
+
 async function loginGoogle() {
   const btn = document.querySelector('.login-btn-google');
   if (btn) { btn.disabled = true; btn.style.opacity = '.6'; }
   try {
     await getSB().auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: 'https://luminae-studio.github.io/Folha-a-folha/' }
+      options: { redirectTo: 'https://luminae-studio.github.io/Fola_A_Folha-app/' }
     });
   } catch(e) {
     console.error('loginGoogle error', e);
